@@ -1,8 +1,8 @@
 // Datastructures.hh
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Joni Juhola
+// Student email: joni.juhola@tuni.fi
+// Student number: K440164
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
@@ -14,6 +14,7 @@
 #include <limits>
 #include <functional>
 #include <exception>
+#include <memory>
 
 // Types for IDs
 using TownID = std::string;
@@ -180,6 +181,15 @@ public:
 private:
     // Add stuff needed for your class implementation here
 
+    struct Node {
+        std::string name_;
+        Coord coord_;
+        int tax_;
+        std::vector<std::shared_ptr<Node>> children_;
+        Node* parent_;
+    };
+
+    std::unordered_map<TownID, Node> towns_;
 };
 
 #endif // DATASTRUCTURES_HH
