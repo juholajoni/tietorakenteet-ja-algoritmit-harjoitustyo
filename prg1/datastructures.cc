@@ -41,61 +41,102 @@ Datastructures::~Datastructures()
 unsigned int Datastructures::town_count()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("town_count()");
+    return towns_.size();
 }
 
 void Datastructures::clear_all()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("clear_all()");
+    towns_.clear();
 }
 
-bool Datastructures::add_town(TownID /*id*/, const Name &/*name*/, Coord /*coord*/, int /*tax*/)
+bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("add_town()");
+    std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        return false;
+    }else{
+        Node new_town;
+        new_town.name_=name;
+        new_town.coord_=coord;
+        new_town.tax_=tax;
+        towns_.insert({id,new_town});
+        return true;
+    }
 }
 
-Name Datastructures::get_town_name(TownID /*id*/)
+Name Datastructures::get_town_name(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_name()");
+    std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        return got->second.name_;
+    }else{
+        return NO_NAME;
+    }
 }
 
-Coord Datastructures::get_town_coordinates(TownID /*id*/)
+Coord Datastructures::get_town_coordinates(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_coordinates()");
+    std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        return got->second.coord_;
+    }else{
+        return NO_COORD;
+    }
 }
 
-int Datastructures::get_town_tax(TownID /*id*/)
+int Datastructures::get_town_tax(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_tax()");
+    std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        return got->second.tax_;
+    }else{
+        return NO_VALUE;
+    }
 }
 
 std::vector<TownID> Datastructures::all_towns()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("all_towns()");
+    std::vector<TownID> allTowns;
+    for (auto it=towns_.begin(); it!=towns_.end(); it++){
+        allTowns.push_back(it->first);
+    }
+    return allTowns;
 }
 
-std::vector<TownID> Datastructures::find_towns(const Name &/*name*/)
+std::vector<TownID> Datastructures::find_towns(const Name &name)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("find_towns()");
+    std::vector<TownID> same_name_towns;
+    for (auto it=towns_.begin(); it!=towns_.end(); it++){
+        if (it->second.name_==name){
+            same_name_towns.push_back(it->first);
+        }
+    }
+    return same_name_towns;
 }
 
-bool Datastructures::change_town_name(TownID /*id*/, const Name &/*newname*/)
+bool Datastructures::change_town_name(TownID id, const Name &newname)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("change_town_name()");
+    std::unordered_map<TownID,Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        towns_.at(id).name_=newname;
+        return true;
+    }else{
+        return false;
+    }
 }
 
 std::vector<TownID> Datastructures::towns_alphabetically()
