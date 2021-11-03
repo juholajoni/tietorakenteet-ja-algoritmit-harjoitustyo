@@ -142,25 +142,64 @@ bool Datastructures::change_town_name(TownID id, const Name &newname)
 std::vector<TownID> Datastructures::towns_alphabetically()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_alphabetically()");
+    // throw NotImplemented("towns_alphabetically()");
+    std::vector<std::pair<TownID,Name>> towns_info;
+    for (auto it=towns_.begin(); it!=towns_.end(); it++){
+        std::pair info(it->first,it->second.name_);
+        towns_info.push_back(info);
+    }
+    std::sort(towns_info.begin(),towns_info.end(),[](auto a, auto b)
+    {return a.second<b.second;});
+    std::vector<TownID> sorted_towns;
+    for (auto it=towns_info.begin();it!=towns_info.end();it++){
+        sorted_towns.push_back(it->first);
+    }
+    return sorted_towns;
 }
 
 std::vector<TownID> Datastructures::towns_distance_increasing()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_distance_increasing()");
+    // throw NotImplemented("towns_distance_increasing()");
+    std::vector<std::pair<TownID,int>> towns_info;
+    for (auto it=towns_.begin(); it!=towns_.end(); it++){
+        Distance d=sqrt(it->second.coord_.x*it->second.coord_.x+
+                        it->second.coord_.y*it->second.coord_.y);
+        std::pair info(it->first,d);
+        towns_info.push_back(info);
+    }
+    std::sort(towns_info.begin(),towns_info.end(),[](auto a, auto b)
+    {return a.second<b.second;});
+    std::vector<TownID> sorted_towns;
+    for (auto it=towns_info.begin();it!=towns_info.end();it++){
+        sorted_towns.push_back(it->first);
+    }
+    return sorted_towns;
 }
 
 TownID Datastructures::min_distance()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("min_distance()");
+    // throw NotImplemented("min_distance()");
+    if (towns_.size()!=0){
+        std::vector<TownID> sorted_towns=towns_distance_increasing();
+        return sorted_towns.at(0);
+    }else{
+        return NO_TOWNID;
+    }
 }
 
 TownID Datastructures::max_distance()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("max_distance()");
+    // throw NotImplemented("max_distance()");
+    auto amount=towns_.size();
+    if (amount!=0){
+        std::vector<TownID> sorted_towns=towns_distance_increasing();
+        return sorted_towns.at(amount-1);
+    }else{
+        return NO_TOWNID;
+    }
 }
 
 bool Datastructures::add_vassalship(TownID /*vassalid*/, TownID /*masterid*/)
@@ -211,3 +250,4 @@ int Datastructures::total_net_tax(TownID /*id*/)
     // Also uncomment parameters ( /* param */ -> param )
     throw NotImplemented("total_net_tax()");
 }
+

@@ -185,11 +185,12 @@ private:
         std::string name_;
         Coord coord_;
         int tax_;
-        std::vector<std::shared_ptr<Node>> children_;
-        Node* parent_;
+        std::vector<std::shared_ptr<Node>> vassals_;
+        Node* master_;
     };
 
     std::unordered_map<TownID, Node> towns_;
+
 };
 
 #endif // DATASTRUCTURES_HH
