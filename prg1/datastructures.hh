@@ -183,6 +183,7 @@ private:
 
     struct Node {
         std::string name_;
+        TownID id_;
         Coord coord_;
         int tax_;
         std::vector<std::shared_ptr<Node>> vassals_;
