@@ -40,21 +40,18 @@ Datastructures::~Datastructures()
 
 unsigned int Datastructures::town_count()
 {
-    // Replace the line below with your implementation
     return towns_.size();
 }
 
 void Datastructures::clear_all()
 {
-    // Replace the line below with your implementation
     towns_.clear();
 }
 
 bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+
     if (got!=towns_.end()){
         return false;
     }else{
@@ -71,9 +68,8 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 
 Name Datastructures::get_town_name(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+
     if (got!=towns_.end()){
         return got->second.name_;
     }else{
@@ -83,9 +79,8 @@ Name Datastructures::get_town_name(TownID id)
 
 Coord Datastructures::get_town_coordinates(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+
     if (got!=towns_.end()){
         return got->second.coord_;
     }else{
@@ -95,9 +90,8 @@ Coord Datastructures::get_town_coordinates(TownID id)
 
 int Datastructures::get_town_tax(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+
     if (got!=towns_.end()){
         return got->second.tax_;
     }else{
@@ -107,7 +101,6 @@ int Datastructures::get_town_tax(TownID id)
 
 std::vector<TownID> Datastructures::all_towns()
 {
-    // Replace the line below with your implementation
     std::vector<TownID> allTowns;
     for (auto it=towns_.begin(); it!=towns_.end(); it++){
         allTowns.push_back(it->first);
@@ -117,9 +110,8 @@ std::vector<TownID> Datastructures::all_towns()
 
 std::vector<TownID> Datastructures::find_towns(const Name &name)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::vector<TownID> same_name_towns;
+
     for (auto it=towns_.begin(); it!=towns_.end(); it++){
         if (it->second.name_==name){
             same_name_towns.push_back(it->first);
@@ -130,9 +122,8 @@ std::vector<TownID> Datastructures::find_towns(const Name &name)
 
 bool Datastructures::change_town_name(TownID id, const Name &newname)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID,Node>::const_iterator got=towns_.find(id);
+
     if (got!=towns_.end()){
         towns_.at(id).name_=newname;
         return true;
@@ -143,8 +134,6 @@ bool Datastructures::change_town_name(TownID id, const Name &newname)
 
 std::vector<TownID> Datastructures::towns_alphabetically()
 {
-    // Replace the line below with your implementation
-    // throw NotImplemented("towns_alphabetically()");
     std::vector<TownID> sorted_towns;
     std::vector<std::pair<TownID,Name>> towns_info;
 
@@ -163,8 +152,6 @@ std::vector<TownID> Datastructures::towns_alphabetically()
 
 std::vector<TownID> Datastructures::towns_distance_increasing()
 {
-    // Replace the line below with your implementation
-    // throw NotImplemented("towns_distance_increasing()");
     std::vector<TownID> sorted_towns;
     std::vector<std::pair<TownID, std::pair<int,int>>> towns_info;
 
@@ -177,9 +164,11 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
         towns_info.push_back(id_and_dist);
     }
     std::sort(towns_info.begin(),towns_info.end(),[](auto a, auto b){
-        if (a.second.second==b.second.second){return a.second.second<b.second.second;}
-        return a.second<b.second;});
-
+        if (a.second.first==b.second.first)
+            return a.second.second<b.second.second;
+        else
+            return a.second<b.second;
+    });
     for (auto it=towns_info.begin();it!=towns_info.end();it++){
         sorted_towns.push_back(it->first);
     }
@@ -188,8 +177,6 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
 
 TownID Datastructures::min_distance()
 {
-    // Replace the line below with your implementation
-    // throw NotImplemented("min_distance()");
     if (towns_.size()!=0){
         std::vector<TownID> sorted_towns=towns_distance_increasing();
         return sorted_towns.at(0);
@@ -200,8 +187,6 @@ TownID Datastructures::min_distance()
 
 TownID Datastructures::max_distance()
 {
-    // Replace the line below with your implementation
-    // throw NotImplemented("max_distance()");
     auto amount=towns_.size();
     if (amount!=0){
         std::vector<TownID> sorted_towns=towns_distance_increasing();
@@ -213,8 +198,6 @@ TownID Datastructures::max_distance()
 
 bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID,Node>::const_iterator gotvassal=towns_.find(vassalid);
     std::unordered_map<TownID,Node>::const_iterator gotmaster=towns_.find(masterid);
 
@@ -224,10 +207,8 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
         if(gotvassal->second.master_!=nullptr){
             return false;
         }else{
-            Node* new_master= new Node(towns_.at(masterid));
-            towns_.at(vassalid).master_=new_master;
-            std::shared_ptr<Node> new_vassal=std::make_shared<Node>(towns_.at(vassalid));
-            towns_.at(masterid).vassals_.push_back(new_vassal);
+            towns_.at(vassalid).master_=&towns_.at(masterid);
+            towns_.at(masterid).vassals_.push_back(vassalid);
             return true;
         }
     }
@@ -235,14 +216,12 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
 
 std::vector<TownID> Datastructures::get_town_vassals(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
     std::vector<TownID> town_vassals;
 
     if(got!=towns_.end()){
         for(auto& vassal : got->second.vassals_){
-            town_vassals.push_back(vassal->id_);
+            town_vassals.push_back(vassal);
         }
     }else{
         town_vassals.push_back(NO_TOWNID);
@@ -252,13 +231,11 @@ std::vector<TownID> Datastructures::get_town_vassals(TownID id)
 
 std::vector<TownID> Datastructures::taxer_path(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
     std::vector<TownID> town_masters;
 
     if(got!=towns_.end()){
-        town_masters.push_back(got->second.id_);
+        town_masters.push_back(got->first);
         auto current=got->second.master_;
         while(current!=nullptr){
             town_masters.push_back(current->id_);
@@ -272,31 +249,142 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
     return town_masters;
 }
 
-bool Datastructures::remove_town(TownID /*id*/)
+bool Datastructures::remove_town(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("remove_town()");
+    std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
+
+    if(got==towns_.end()){
+        return false;
+    }else if(got->second.master_==nullptr){
+        if(got->second.vassals_.size()>0){
+            for(auto& town_vassals:towns_.at(id).vassals_){
+                towns_.at(town_vassals).master_=nullptr;
+            }
+        }
+    }else{
+       if(got->second.vassals_.size()>0){
+           for(auto& town_vassals:towns_.at(id).vassals_){
+               towns_.at(town_vassals).master_=towns_.at(id).master_;
+               towns_.at(got->second.master_->id_).vassals_.push_back(town_vassals);
+           }
+       }
+       auto find_id=std::find(begin(towns_.at(got->second.master_->id_).vassals_),
+                              end(towns_.at(got->second.master_->id_).vassals_),id);
+       towns_.at(got->second.master_->id_).vassals_.erase(find_id);
+       towns_.at(id).master_=nullptr;
+       delete towns_.at(id).master_;
+    }
+    towns_.erase(id);
+    return true;
 }
 
-std::vector<TownID> Datastructures::towns_nearest(Coord /*coord*/)
+std::vector<TownID> Datastructures::towns_nearest(Coord coord)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("towns_nearest()");
+    std::vector<TownID> sorted_towns;
+    std::vector<std::pair<TownID, std::pair<int,int>>> towns_info;
+
+    for (auto it=towns_.begin(); it!=towns_.end(); it++){
+        double d=sqrt((it->second.coord_.x-coord.x)*(it->second.coord_.x-coord.x)+
+                        (it->second.coord_.y-coord.y)*(it->second.coord_.y-coord.y));
+        Distance dist=std::floor(d);
+        std::pair dist_and_y(dist,it->second.coord_.y);
+        std::pair id_and_dist(it->first,dist_and_y);
+        towns_info.push_back(id_and_dist);
+    }
+    std::sort(towns_info.begin(),towns_info.end(),[](auto a, auto b){
+        if (a.second.first==b.second.first)
+            return a.second.second<b.second.second;
+        else
+            return a.second<b.second;
+    });
+    for (auto it=towns_info.begin();it!=towns_info.end();it++){
+        sorted_towns.push_back(it->first);
+    }
+    return sorted_towns;
 }
 
-std::vector<TownID> Datastructures::longest_vassal_path(TownID /*id*/)
+std::pair<TownID,int> Datastructures::deepest_vassal(TownID id,int current_level=0,
+                                                     int deepest_level=0,
+                                                     TownID deepestid="")
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("longest_vassal_path()");
+    if (towns_.at(id).vassals_.size()!=0){
+        current_level+=1;
+        for (auto &vassal:towns_.at(id).vassals_){
+            std::pair<TownID,int> next_vassal=deepest_vassal(vassal,current_level,
+                                                             deepest_level,deepestid);
+            deepest_level=next_vassal.second;
+            deepestid=next_vassal.first;
+        }
+    }
+    if (current_level>deepest_level){
+        deepest_level=current_level;
+        deepestid=id;
+    }else if (deepest_level==0 and current_level==0){
+        deepestid=id;
+    }
+    std::pair deepest(deepestid,deepest_level);
+    return deepest;
 }
 
-int Datastructures::total_net_tax(TownID /*id*/)
+std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("total_net_tax()");
+    // throw NotImplemented("longest_vassal_path()");
+    std::vector<TownID> vassals;
+
+    std::unordered_map<TownID,Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        std::pair<TownID,int> deepest=deepest_vassal(id);
+        vassals.push_back(deepest.first);
+        Node* current_master=towns_.at(deepest.first).master_;
+        Node* id_master=towns_.at(id).master_;
+        while (current_master!=id_master){
+            vassals.push_back(current_master->id_);
+            current_master=current_master->master_;
+        }
+        current_master=nullptr;
+        id_master=nullptr;
+        delete current_master;
+        delete id_master;
+        std::reverse(vassals.begin(),vassals.end());
+    }else{
+        vassals.push_back(NO_TOWNID);
+    }
+    return vassals;
+}
+
+int Datastructures::vassals_tax(TownID id, bool first_id)
+{
+    int total_tax=0;
+    if (towns_.at(id).vassals_.size()!=0){
+        for (auto &vassal:towns_.at(id).vassals_){
+            int vassal_tax=vassals_tax(vassal,false);
+            total_tax+=vassal_tax;
+        }
+    }
+    if (first_id==false){
+        return floor(total_tax+towns_.at(id).tax_)*0.1;
+    }
+    return total_tax;
+}
+
+int Datastructures::total_net_tax(TownID id)
+{
+    // Replace the line below with your implementation
+    // Also uncomment parameters ( /* param */ -> param )
+    // throw NotImplemented("total_net_tax()");
+    int town_net_tax=0;
+    std::unordered_map<TownID,Node>::const_iterator got=towns_.find(id);
+    if (got!=towns_.end()){
+        town_net_tax+=towns_.at(id).tax_;
+        town_net_tax+=vassals_tax(id,true);
+        if (towns_.at(id).master_!=nullptr){
+            town_net_tax-=floor(town_net_tax*0.1);
+        }
+        return town_net_tax;
+    }else{
+        return NO_VALUE;
+    }
 }
 

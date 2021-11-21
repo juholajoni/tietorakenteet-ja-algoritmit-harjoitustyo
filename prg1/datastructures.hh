@@ -186,11 +186,16 @@ private:
         TownID id_;
         Coord coord_;
         int tax_;
-        std::vector<std::shared_ptr<Node>> vassals_;
+        std::vector<TownID> vassals_;
         Node* master_;
     };
 
     std::unordered_map<TownID, Node> towns_;
+
+    std::pair<TownID,int> deepest_vassal(TownID id,int current_level,
+                                         int deepest_level, TownID last);
+
+    int vassals_tax(TownID id,bool first_id);
 
 };
 
