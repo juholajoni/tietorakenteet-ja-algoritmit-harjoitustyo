@@ -96,86 +96,113 @@ public:
     Datastructures();
     ~Datastructures();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: size() tehokkuus on vakio
     unsigned int town_count();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: clear() tehokkuus on lineaarinen
     void clear_all();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() ja insert molemmat keskiarvoltaan vakioita
+    // ja huonoimmaissa tapauksessa lineaarisia, jolloin add_town on lineaarinen
     bool add_town(TownID id, Name const& name, Coord coord, int tax);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() keskimäärin vakio ja huonoimmassa
+    // tapauksessa lineaarinen
     Name get_town_name(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() keskimäärin vakio ja huonoimmassa
+    // tapauksessa lineaarinen
     Coord get_town_coordinates(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() keskimäärin vakio ja huonoimmassa
+    // tapauksessa lineaarinen
     int get_town_tax(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Käydään towns_ map läpi ja jokainen kaupunki
+    // lisätään vektoriin push_back metodilla joka on vakio eli funktio on
+    // lineaarinen
     std::vector<TownID> all_towns();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Käydään towns_ map läpi ja kaupunki saatetaan
+    // lisätä vektoriin push_back metodilla joka on vakio eli funktio on
+    // lineaarinen
     std::vector<TownID> find_towns(Name const& name);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() ja at() metodit keskiarvoltaan vakioita
+    // ja huonoimmassa tapauksissa lineaarisia.
     bool change_town_name(TownID id, Name const& newname);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: for loopit lineaarisia ja sort keskimäärin
+    // lineaarinen. Mitkään näistä ei ole päällekkäin, joten funktion tehokkuus
+    // on lineaarinen
     std::vector<TownID> towns_alphabetically();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: for loopit lineaarisia ja sort keskimäärin
+    // lineaarinen. Mitkään näistä ei ole päällekkäin, joten funktion tehokkuus
+    // on lineaarinen
     std::vector<TownID> towns_distance_increasing();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: kutsutaan towns_distance_increasing() funktiota
+    // jonka tehokkuus on lineaarinen. Size() ja vektorin at() ovat vakioita
     TownID min_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: kutsutaan towns_distance_increasing() funktiota
+    // jonka tehokkuus on lineaarinen. Size() ja vektorin at() ovat vakioita
     TownID max_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Vakio
+    // Short rationale for estimate: find() ja at() metodit keskiarvoltaan vakioita
+    // ja huonoimmassa tapauksissa lineaarisia.
     bool add_vassalship(TownID vassalid, TownID masterid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Jos käydään id vassalit läpi for loopista niin
+    // niitä voi olla huonoimmassa tapauksessa n-1 kpl eli tehokkuus on lineaarinen.
+    // Muulloin tehokkuus on vakio, koska find() on keskiarvoltaan vakio ja push_back()
+    // on myös vakio
     std::vector<TownID> get_town_vassals(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Jos käydään id masterit läpi while loopissa niin
+    // huonoimmassa tapauksessa se on lineaarinen operaatio eli tehokkuus on lineaarinen.
+    // Muut operaatiot ovat vakioita.
     std::vector<TownID> taxer_path(TownID id);
 
     // Non-compulsory phase 1 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: For loopit ovat pahimmassa tapauksessa lineaarisia
+    // ja vectorin find operaatio on myös lineaarinen. Erase operaatiot vakioita, koska
+    // poistetaan vain yksi alkio
     bool remove_town(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: for loopit lineaarisia ja sort keskimäärin
+    // lineaarinen. Mitkään näistä ei ole päällekkäin, joten funktion tehokkuus
+    // on lineaarinen
     std::vector<TownID> towns_nearest(Coord coord);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Deepest_vassal apufunktio ja
+    // while looppi ovat pahimillaan lineaarisia. Ja lisäksi reverse algoritmi on n
     std::vector<TownID> longest_vassal_path(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N
+    // Short rationale for estimate: Vassals_tax apufunktio on lineaarinen. Muut
+    // operaatiot ovat vakioaikaisia
     int total_net_tax(TownID id);
 
 private:
