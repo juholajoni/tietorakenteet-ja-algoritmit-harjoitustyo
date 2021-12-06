@@ -1,8 +1,8 @@
 // Datastructures.hh
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Joni Juhola
+// Student email: joni.juhola@tuni.fi
+// Student number: K440164
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
@@ -14,6 +14,7 @@
 #include <limits>
 #include <functional>
 #include <exception>
+#include <memory>
 
 // Types for IDs
 using TownID = std::string;
@@ -224,6 +225,23 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+    
+    struct Node {
+        std::string name_;
+        TownID id_;
+        Coord coord_;
+        int tax_;
+        std::vector<TownID> vassals_;
+        Node* master_;
+        std::vector<std::pair<Node*,Distance>> town_roads_;
+    };
+
+    std::unordered_map<TownID, Node> towns_;
+
+    std::pair<TownID,int> deepest_vassal(TownID id,int current_level,
+                                         int deepest_level, TownID last);
+
+    int vassals_tax(TownID id,bool first_id);
 
 };
 
