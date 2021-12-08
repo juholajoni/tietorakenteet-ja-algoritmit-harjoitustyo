@@ -12,6 +12,7 @@
 
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
+#include <stack>
 
 
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
@@ -67,6 +68,7 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
         new_town.coord_=coord;
         new_town.tax_=tax;
         new_town.master_=nullptr;
+        new_town.colour_=WHITE;
         towns_.insert({id,new_town});
         return true;
     }
@@ -561,11 +563,53 @@ std::vector<TownID> Datastructures::get_roads_from(TownID id)
     return roads_from_town;
 }
 
-std::vector<TownID> Datastructures::any_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("any_route()");
+    // throw NotImplemented("any_route()");
+    std::unordered_map<TownID, Node>::const_iterator gotfromid=towns_.find(fromid);
+    std::unordered_map<TownID, Node>::const_iterator gottoid=towns_.find(toid);
+    std::vector<TownID> route;
+
+    if (gotfromid==towns_.end() or gottoid==towns_.end()){
+        route.push_back(NO_TOWNID);
+    }else{
+        for (auto &town: towns_){
+            town.second.colour_=WHITE;
+        }
+        std::stack<Node*> stack;
+        stack.push(&towns_.at(fromid));
+        while (!stack.empty()){
+            Node* top_element=stack.top();
+            stack.pop();
+            if (top_element->colour_==WHITE){
+                top_element->colour_=GRAY;
+                stack.push(top_element);
+                if(top_element->id_==toid){
+                    break;
+                }
+                for (auto road: top_element->town_roads_){
+                    if (road.first->colour_==WHITE){
+                        stack.push(road.first);
+                    }
+                }
+            }else{
+                top_element->colour_=BLACK;
+            }
+        }
+        while(!stack.empty()){
+            Node* top=stack.top();
+            if (top->colour_==GRAY){
+                route.push_back(top->id_);
+                top->colour_=BLACK;
+            }
+            stack.pop();
+        }
+        std::reverse(route.begin(),route.end());
+    }
+    return route;
+
 }
 
 bool Datastructures::remove_road(TownID /*town1*/, TownID /*town2*/)

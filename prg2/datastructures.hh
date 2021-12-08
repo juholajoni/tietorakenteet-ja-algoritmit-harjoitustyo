@@ -71,6 +71,8 @@ using Distance = int;
 // Return value for cases where Distance is unknown
 Distance const NO_DISTANCE = NO_VALUE;
 
+enum Colour {WHITE, GRAY, BLACK};
+
 // This exception class is there just so that the user interface can notify
 // about operations which are not (yet) implemented
 class NotImplemented : public std::exception
@@ -234,6 +236,7 @@ private:
         std::vector<TownID> vassals_;
         Node* master_;
         std::vector<std::pair<Node*,Distance>> town_roads_;
+        Colour colour_;
     };
 
     std::unordered_map<TownID, Node> towns_;
