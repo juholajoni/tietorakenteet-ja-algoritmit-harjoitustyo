@@ -237,6 +237,8 @@ private:
         Node* master_;
         std::vector<std::pair<Node*,Distance>> town_roads_;
         Colour colour_;
+        float d_;
+        Node* path_back_;
     };
 
     std::unordered_map<TownID, Node> towns_;

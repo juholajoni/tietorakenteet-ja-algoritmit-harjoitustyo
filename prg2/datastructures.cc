@@ -13,7 +13,7 @@
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 #include <stack>
-
+#include <list>
 
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
@@ -69,6 +69,8 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
         new_town.tax_=tax;
         new_town.master_=nullptr;
         new_town.colour_=WHITE;
+        new_town.d_=INFINITY;
+        new_town.path_back_=nullptr;
         towns_.insert({id,new_town});
         return true;
     }
@@ -612,18 +614,92 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 
 }
 
-bool Datastructures::remove_road(TownID /*town1*/, TownID /*town2*/)
+bool Datastructures::remove_road(TownID town1, TownID town2)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("remove_road()");
+    // throw NotImplemented("remove_road()");
+    std::unordered_map<TownID, Node>::const_iterator gotTown1=towns_.find(town1);
+    std::unordered_map<TownID, Node>::const_iterator gotTown2=towns_.find(town2);
+
+    if(gotTown1==towns_.end() or gotTown2==towns_.end()){
+        return false;
+    }else{
+        Node* town1_ptr=&towns_.at(town1);
+        Node* town2_ptr=&towns_.at(town2);
+        bool find_road=false;
+        unsigned long int index=0;
+        while(index < town1_ptr->town_roads_.size()){
+            if(town1_ptr->town_roads_.at(index).first==town2_ptr){
+                town1_ptr->town_roads_.erase(town1_ptr->town_roads_.begin()+index);
+                find_road=true;
+                break;
+            }
+            index++;
+        }
+        if (find_road==false){
+            return false;
+        }else{
+            index=0;
+            while (index < town2_ptr->town_roads_.size()) {
+                if (town2_ptr->town_roads_.at(index).first==town1_ptr){
+                    town2_ptr->town_roads_.erase(town2_ptr->town_roads_.begin()+index);
+                    break;
+                }
+                index++;
+            }
+            return true;
+        }
+    }
 }
 
-std::vector<TownID> Datastructures::least_towns_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("least_towns_route()");
+    // throw NotImplemented("least_towns_route()");
+    std::unordered_map<TownID, Node>::const_iterator gotfromid=towns_.find(fromid);
+    std::unordered_map<TownID, Node>::const_iterator gottoid=towns_.find(toid);
+    std::vector<TownID> route;
+
+    if (gotfromid==towns_.end() or gottoid==towns_.end()){
+        route.push_back(NO_TOWNID);
+    }else{
+        for (auto &town : towns_){
+            town.second.colour_=WHITE;
+            town.second.d_=INFINITY;
+            town.second.path_back_=nullptr;
+        }
+        std::list<Node*> queue;
+        Node* fromtown=&towns_.at(fromid);
+        fromtown->colour_=GRAY;
+        fromtown->d_=0;
+        queue.push_back(fromtown);
+        while(!queue.empty()){
+            Node* front_element=queue.front();
+            if (front_element->id_==toid){
+                break;
+            }
+            queue.pop_front();
+            for (auto& road: front_element->town_roads_){
+                if (road.first->colour_==WHITE){
+                    road.first->colour_=GRAY;
+                    road.first->d_=front_element->d_+1;
+                    road.first->path_back_=front_element;
+                    queue.push_back(road.first);
+                }
+            }
+            front_element->colour_=BLACK;
+        }
+        Node* current=queue.front();
+        while(current!=nullptr){
+            route.push_back(current->id_);
+            current=current->path_back_;
+        }
+        std::reverse(route.begin(),route.end());
+    }
+    return route;
+
 }
 
 std::vector<TownID> Datastructures::road_cycle_route(TownID /*startid*/)
