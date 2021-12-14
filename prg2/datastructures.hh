@@ -183,42 +183,56 @@ public:
 
     // Phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N*R
+    // Short rationale for estimate: Teiden mukaan lineaarinen. Käydään N kaupunkia läpi
+    // ja clear komennolla tyhjennetään kaupungin tie vektori. Pahimmissa tapauksessa
+    // jokaisella kaupungilla on R kpl teitä eli teiden max määrä eli clear tehokkuus on myös R.
     void clear_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N*R*log(R)
+    // Short rationale for estimate: Teiden mukaan lineaarinen. Käydään N kaupunkia läpi
+    // ja käydään vielä kaupungit tiet läpi ja pahimmassa tapauksessa jokaisella kaupungilla
+    // on R kpl teitä eli tehokkuus on N*R. Lisäksi tiet lisätään settiin joka on log(R)
     std::vector<std::pair<TownID, TownID>> all_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: R
+    // Short rationale for estimate: Kaupungin teiden mukaan lineaarinen. Find komento
+    // on keskimäärin vakioaikainen. Toisen kaupungin tiet käydään läpi eli pahimmassa
+    // tapauksessa niitä teitä on R kpl. Muut funktion komennot keskimäärin vakioaikaisia
     bool add_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: R
+    // Short rationale for estimate: Kaupungin teiden mukaan lineaarinen. Find komento
+    // on keskimäärin vakioaikainen. Toisen kaupungin tiet käydään läpi eli pahimmassa
+    // tapauksessa niitä teitä on R kpl.
     std::vector<TownID> get_roads_from(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N+R
+    // Short rationale for estimate: Syvyys-ensin-haku tehokkuus pahimmillaan on
+    // n kaupunkien määrä + R kaarien=teiden määrä
     std::vector<TownID> any_route(TownID fromid, TownID toid);
 
     // Non-compulsory phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: R
+    // Short rationale for estimate: Teiden mukaan lineaarinen. Käydään kaupunkien
+    // tiet läpi ja poistetaan tie, jos se löytyy. Teitä voi olla R kpl. Find, at ja
+    // erase komennot on keskimäärin vakioaikaisia.
     bool remove_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N+R
+    // Short rationale for estimate: Leveys-ensin-haku tehokkuus pahimmillaan on
+    // n kaupunkien määrä + R kaarien=teiden määrä
     std::vector<TownID> least_towns_route(TownID fromid, TownID toid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N+R
+    // Short rationale for estimate: Syvyys-ensin-haku tehokkuus pahimmillaan on
+    // n kaupunkien määrä + R kaarien=teiden määrä
     std::vector<TownID> road_cycle_route(TownID startid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: (N+R)*log(N+R)
+    // Short rationale for estimate: A* algoritmin tehokkuus on (N+R)*log(N+R), jossa
+    // N on kaupunkien määrä ja R kaarien=teiden määrä.
     std::vector<TownID> shortest_route(TownID fromid, TownID toid);
 
     // Estimate of performance:

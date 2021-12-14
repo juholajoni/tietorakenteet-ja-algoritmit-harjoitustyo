@@ -10,10 +10,10 @@
 
 #include <cmath>
 
-#include <unordered_set>
-#include <boost/functional/hash.hpp>
+#include <set>
 #include <stack>
 #include <list>
+#include <queue>
 
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
@@ -453,6 +453,7 @@ int Datastructures::vassals_tax(TownID id, bool first_id)
     return total_tax;
 }
 
+
 int Datastructures::total_net_tax(TownID id)
 {
     // Etsitään id mapista
@@ -483,7 +484,7 @@ int Datastructures::total_net_tax(TownID id)
 
 void Datastructures::clear_roads()
 {
-    // Replace the line below with your implementation
+    // Käydään kaupungit läpi ja tyhjennetään kaupungin town_roads vektori
     for (auto &town : towns_){
         if (town.second.town_roads_.size()>0){
             town.second.town_roads_.clear();
@@ -493,11 +494,11 @@ void Datastructures::clear_roads()
 
 std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
 {
-    // Replace the line below with your implementation
-    // throw NotImplemented("all_roads()");
-    std::unordered_set<std::pair<TownID,TownID>, boost::hash<std::pair
-            <TownID,TownID>>> set_of_roads;
+    std::set<std::pair<TownID, TownID>> set_of_roads;
     std::vector<std::pair<TownID, TownID>> result_roads;
+
+    // Käydää kaupungit läpi ja kaupunkien tiet ja lisätätään settiin, jotta ei tule
+    // tupla teitä
     for (auto &town : towns_){
         for (auto &town_road : town.second.town_roads_){
             if (town.first<town_road.first->id_){
@@ -509,8 +510,8 @@ std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
             }
         }
     }
+    // Käydään setin tiet läpi ja lisätään palautus vektoriin
     for (auto &road: set_of_roads){
-        // Tähän tarkistus onko tietä ennestään
         result_roads.push_back(road);
     }
     return result_roads;
@@ -518,20 +519,20 @@ std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
 
 bool Datastructures::add_road(TownID town1, TownID town2)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    // throw NotImplemented("add_road()");
+    // Etsitään kaupungit
     std::unordered_map<TownID, Node>::const_iterator gotTown1=towns_.find(town1);
     std::unordered_map<TownID, Node>::const_iterator gotTown2=towns_.find(town2);
 
     if(gotTown1==towns_.end() or gotTown2==towns_.end()){
         return false;
     }else{
+        // Tarkastetaan löytyykö tie kaupunkien väliltä
         for (auto town1_road: gotTown1->second.town_roads_){
             if (town1_road.first->id_==town2){
                 return false;
             }
         }
+        // Jos ei löydy, luodaan kaupungeista osoittimet ja lasketaan tien pituus
         Node* Town1_ptr=&towns_.at(town1);
         Node* Town2_ptr=&towns_.at(town2);
         Coord town1_coord=gotTown1->second.coord_;
@@ -539,6 +540,9 @@ bool Datastructures::add_road(TownID town1, TownID town2)
         double d=sqrt((town1_coord.x-town2_coord.x)*(town1_coord.x-town2_coord.x)+
                         (town1_coord.y-town2_coord.y)*(town1_coord.y-town2_coord.y));
         Distance dist=std::floor(d);
+
+        // Muodostetaan osoittimista ja tien pituudesta pari ja lisätään kaupunkien
+        // tie -vektoriin
         std::pair town1_road(Town2_ptr,dist);
         std::pair town2_road(Town1_ptr,dist);
         towns_.at(town1).town_roads_.push_back(town1_road);
@@ -549,15 +553,14 @@ bool Datastructures::add_road(TownID town1, TownID town2)
 
 std::vector<TownID> Datastructures::get_roads_from(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    // throw NotImplemented("get_roads_from()");
+    // Etsitään kaupunki
     std::unordered_map<TownID, Node>::const_iterator got=towns_.find(id);
     std::vector<TownID> roads_from_town;
 
     if (got==towns_.end()){
         roads_from_town.push_back(NO_TOWNID);
     }else{
+        // Käydään kaupungin tiet ja lisätään vektoriin
         for (auto& town: got->second.town_roads_){
             roads_from_town.push_back(town.first->id_);
         }
@@ -567,9 +570,7 @@ std::vector<TownID> Datastructures::get_roads_from(TownID id)
 
 std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    // throw NotImplemented("any_route()");
+    // Etsitään kaupungit
     std::unordered_map<TownID, Node>::const_iterator gotfromid=towns_.find(fromid);
     std::unordered_map<TownID, Node>::const_iterator gottoid=towns_.find(toid);
     std::vector<TownID> route;
@@ -577,6 +578,7 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
     if (gotfromid==towns_.end() or gottoid==towns_.end()){
         route.push_back(NO_TOWNID);
     }else{
+        // Syvyys-ensin-haku
         for (auto &town: towns_){
             town.second.colour_=WHITE;
         }
@@ -588,6 +590,7 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
             if (top_element->colour_==WHITE){
                 top_element->colour_=GRAY;
                 stack.push(top_element);
+                // Mikäli saavutaan päätekaupunkiin, niin lopetetaan while-loop
                 if(top_element->id_==toid){
                     break;
                 }
@@ -600,6 +603,7 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
                 top_element->colour_=BLACK;
             }
         }
+        // Käydään läpi pinon alkiot ja lisätään harmaat alkiot reitti vektoriin
         while(!stack.empty()){
             Node* top=stack.top();
             if (top->colour_==GRAY){
@@ -608,6 +612,7 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
             }
             stack.pop();
         }
+        // Käännetään reitin järjestys
         std::reverse(route.begin(),route.end());
     }
     return route;
@@ -616,19 +621,19 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 
 bool Datastructures::remove_road(TownID town1, TownID town2)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    // throw NotImplemented("remove_road()");
+    // Etsitään kaupungit
     std::unordered_map<TownID, Node>::const_iterator gotTown1=towns_.find(town1);
     std::unordered_map<TownID, Node>::const_iterator gotTown2=towns_.find(town2);
 
     if(gotTown1==towns_.end() or gotTown2==towns_.end()){
         return false;
     }else{
+        // Muodostetaan osoittimet kaupungeista
         Node* town1_ptr=&towns_.at(town1);
         Node* town2_ptr=&towns_.at(town2);
         bool find_road=false;
         unsigned long int index=0;
+        // Käydään ensimmäisen kaupungin tiet ja katsotaan löytyykö poistettavaa tietä
         while(index < town1_ptr->town_roads_.size()){
             if(town1_ptr->town_roads_.at(index).first==town2_ptr){
                 town1_ptr->town_roads_.erase(town1_ptr->town_roads_.begin()+index);
@@ -637,10 +642,12 @@ bool Datastructures::remove_road(TownID town1, TownID town2)
             }
             index++;
         }
+        // Mikäli tietä ei löydy, palautetaan false
         if (find_road==false){
             return false;
         }else{
             index=0;
+            // Käydään toisen kaupungin tiet ja poistetaan etsitty tie
             while (index < town2_ptr->town_roads_.size()) {
                 if (town2_ptr->town_roads_.at(index).first==town1_ptr){
                     town2_ptr->town_roads_.erase(town2_ptr->town_roads_.begin()+index);
@@ -655,9 +662,7 @@ bool Datastructures::remove_road(TownID town1, TownID town2)
 
 std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    // throw NotImplemented("least_towns_route()");
+    // Etsitään kaupungit
     std::unordered_map<TownID, Node>::const_iterator gotfromid=towns_.find(fromid);
     std::unordered_map<TownID, Node>::const_iterator gottoid=towns_.find(toid);
     std::vector<TownID> route;
@@ -665,6 +670,7 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
     if (gotfromid==towns_.end() or gottoid==towns_.end()){
         route.push_back(NO_TOWNID);
     }else{
+        // leveys-ensin-haku
         for (auto &town : towns_){
             town.second.colour_=WHITE;
             town.second.d_=INFINITY;
@@ -677,6 +683,7 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
         queue.push_back(fromtown);
         while(!queue.empty()){
             Node* front_element=queue.front();
+            // Tarkistetaan onko päästy päämäärään
             if (front_element->id_==toid){
                 break;
             }
@@ -691,29 +698,146 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
             }
             front_element->colour_=BLACK;
         }
+        // Käydään läpi lyhyin reitti path_back avulla ja lisätään kaupungit route vektoriin
         Node* current=queue.front();
         while(current!=nullptr){
             route.push_back(current->id_);
             current=current->path_back_;
         }
+        // Käännetään vektorin järjestys
         std::reverse(route.begin(),route.end());
     }
     return route;
 
 }
 
-std::vector<TownID> Datastructures::road_cycle_route(TownID /*startid*/)
+std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("road_cycle_route()");
+    // Etsitään kaupunki
+    std::unordered_map<TownID, Node>::const_iterator gotstartid=towns_.find(startid);
+    std::vector<TownID> route;
+
+    if (gotstartid==towns_.end()){
+        route.push_back(NO_TOWNID);
+    }else{
+        // syvyys-ensin-haku
+        for (auto &town: towns_){
+            town.second.colour_=WHITE;
+            // Kaupungin path_back avulla katsotaan ettei mennä takaisin sinne mistä ollaan
+            // tultu
+            town.second.path_back_=nullptr;
+        }
+        // Merkataan ylös kaupunki joka aiheuttaa silmukan
+        TownID cycle_town;
+        std::stack<Node*> stack;
+        stack.push(&towns_.at(startid));
+        while (!stack.empty()){
+            Node* top_element=stack.top();
+            stack.pop();
+            if (top_element->colour_==WHITE){
+                top_element->colour_=GRAY;
+                stack.push(top_element);
+                for (auto &road: top_element->town_roads_){
+                    if (road.first->colour_==WHITE){
+                        stack.push(road.first);
+                        road.first->path_back_=top_element;
+                    }else if(road.first->colour_==GRAY and road.first!=top_element->path_back_){
+                        // Ollaan löydetty silmukka, lopetetaan for looppi
+                        cycle_town=road.first->id_;
+                        stack.push(road.first);
+                        break;
+                    }
+                }
+                if(cycle_town!=""){
+                    // Ollaan löydetty silmukka, lopetetaan while looppi
+                    break;
+                }
+            }else{
+                top_element->colour_=BLACK;
+            }
+        }
+        // Käydään pino läpi ja harmaat kapungit kuuluvat reitille ja lisätään ne
+        // vektoriin
+        while(!stack.empty()){
+            Node* top=stack.top();
+            if (top->colour_==GRAY){
+                if (top->id_!=cycle_town){
+                    top->colour_=BLACK;
+                }
+                route.push_back(top->id_);
+            }
+            stack.pop();
+        }
+        // Käännetään vektorin järjestys
+        std::reverse(route.begin(),route.end());
+    }
+    return route;
+
 }
 
-std::vector<TownID> Datastructures::shortest_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::shortest_route(TownID fromid, TownID toid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("shortest_route()");
+    // Etsitään kaupungit
+    std::unordered_map<TownID, Node>::const_iterator gotfromid=towns_.find(fromid);
+    std::unordered_map<TownID, Node>::const_iterator gottoid=towns_.find(toid);
+    std::vector<TownID> route;
+
+    if (gotfromid==towns_.end() or gottoid==towns_.end()){
+        route.push_back(NO_TOWNID);
+    }else{
+        // A* algoritmi
+        for (auto &town: towns_){
+            town.second.colour_=WHITE;
+            town.second.d_=INFINITY;
+            town.second.path_back_=nullptr;
+        }
+        std::priority_queue<std::pair<Distance,Node*>> queue;
+        towns_.at(fromid).colour_=GRAY;
+        towns_.at(fromid).d_=0;
+        queue.push({towns_.at(fromid).d_,&towns_.at(fromid)});
+        while(!queue.empty()){
+            Node* min_element=queue.top().second;
+            queue.pop();
+            if (min_element->id_==toid){
+                break;
+            }
+            for (auto &road: min_element->town_roads_){
+                int sum=road.second+min_element->d_;
+                // Lasketaan etäisyys päätekaupunkiin ja priority_queue järjestää
+                // etäisyyden perusteella
+                int x_difference=road.first->coord_.x-towns_.at(toid).coord_.x;
+                int y_difference=road.first->coord_.y-towns_.at(toid).coord_.y;
+                Distance dist=floor(sqrt(pow(x_difference,2)+pow(y_difference,2)));
+                if (road.first->colour_==WHITE){
+                    road.first->colour_=GRAY;
+                    road.first->d_=sum;
+                    road.first->path_back_=min_element;
+                    queue.push({dist,road.first});
+                }else{
+                    if(sum<road.first->d_){
+                        road.first->d_=sum;
+                        road.first->path_back_=min_element;
+                        queue.push({dist,road.first});
+                    }
+                }
+            }
+            min_element->colour_=BLACK;
+        }
+        Node* town_path_back=towns_.at(toid).path_back_;
+        // Tarkistus onko päätekaupunkiin päästy;
+        if(town_path_back!=nullptr){
+            route.push_back(toid);
+        }
+        // Käydään reitti läpi alkaen kaupungista, josta päätekaupunkiin on päästy
+        while(town_path_back!=nullptr){
+            route.push_back(town_path_back->id_);
+            town_path_back=town_path_back->path_back_;
+        }
+        // Käännetään vektorin järjestys
+        std::reverse(route.begin(),route.end());
+    }
+    return route;
+
 }
 
 Distance Datastructures::trim_road_network()
